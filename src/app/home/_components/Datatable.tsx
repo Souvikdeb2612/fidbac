@@ -55,8 +55,8 @@ export default function Datatable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {expenseList.map(({ title, price, segment, date, label }) => (
-              <TableRow>
+            {expenseList.map(({ id, title, price, segment, date, label }) => (
+              <TableRow key={id.toString()}>
                 {/* <TableCell className="hidden sm:table-cell">
                 <Image
                   alt="Product image"

@@ -70,7 +70,7 @@ function ExpenseDialog() {
       <DialogHeader>
         <DialogTitle>Add Expense</DialogTitle>
         <DialogDescription>
-          Add to your expenses here. Click save when you're done.
+          Add to your expenses here. Click save when you are done.
         </DialogDescription>
       </DialogHeader>
       <Form {...form}>

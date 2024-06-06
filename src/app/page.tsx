@@ -1,5 +1,8 @@
-import { Button } from "@/components/ui/button";
-
+"use client";
 export default function Home() {
-  return <main className="flex flex-col items-center justify-between"></main>;
+  return (
+    <main className="flex flex-col items-center justify-between">
+      LoginPage
+    </main>
+  );
 }

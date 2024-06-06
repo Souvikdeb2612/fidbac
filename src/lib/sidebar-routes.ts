@@ -6,12 +6,12 @@ export const routes = [
         label: 'Home',
         href: '/home',
     },
-    // {
-    //     icon: BookOpen,
-    //     label: 'My Courses',
-    //     href: '/student/courses',
-    //     subtabs: [],
-    // },
+    {
+        icon: BookOpen,
+        label: 'My Courses',
+        href: '/student/courses',
+        // subtabs: [],
+    },
     // {
     //     icon: MonitorPlay,
     //     label: 'Class Recordings',

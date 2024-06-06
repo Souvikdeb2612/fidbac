@@ -24,8 +24,8 @@ export default function RootLayout({
         <div className="flex py-6 pr-6 h-screen">
           <Sidebar />
 
-          <div className="ml-[80px] flex-grow bg-muted rounded-2xl ">
-            <ScrollArea className="h-full w-full rounded-2xl">
+          <div className="ml-[80px] p-2 flex-grow bg-muted rounded-2xl ">
+            <ScrollArea className="h-full w-full rounded-2xl p-4">
               {children}
             </ScrollArea>
           </div>

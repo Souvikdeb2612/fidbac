@@ -74,3 +74,17 @@
       @apply bg-background text-foreground;
     }
   }
+
+  .blob1 {
+    --time:18s;
+    --amount:4;
+    --direction: 1;
+    width:55vw;
+    height:50vw;
+    position:absolute;
+    animation:blob-turn var(--time, 30s) linear infinite;
+    transform-origin: center;
+    /* margin-top: 30%; */
+    left:0px;
+    /* margin-left: -20%; */
+  }

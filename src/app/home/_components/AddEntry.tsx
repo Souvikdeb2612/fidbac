@@ -8,12 +8,10 @@ import {
 } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ExpenseDialog from "./ExpenseDialog";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/auth";
 
 export default async function AddEntry() {
-  const session = await getServerSession(authOptions);
-
+  const session = await auth();
   return (
     <Card>
       <CardHeader className="pb-3">

@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import "./globals.css";
 import { inter } from "./fonts";
+import { useSession } from "next-auth/react";
+import SessionWrapper from "./_components/SessionWrapper";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,15 +21,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={cn(inter.className)}>
-        <div className="flex py-6 pr-6 h-screen relative">
-          <Sidebar />
+        <SessionWrapper>
+          <div className="flex py-6 pr-6 h-screen relative">
+            <Sidebar />
 
-          <div className="ml-[80px] p-2 flex-grow bg-muted rounded-2xl">
-            <ScrollArea className="h-full w-full rounded-2xl p-4">
-              {children}
-            </ScrollArea>
+            <div className="ml-[80px] p-2 flex-grow bg-muted rounded-2xl">
+              <ScrollArea className="h-full w-full rounded-2xl p-4">
+                {children}
+              </ScrollArea>
+            </div>
           </div>
-        </div>
+        </SessionWrapper>
       </body>
     </html>
   );

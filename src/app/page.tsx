@@ -19,7 +19,7 @@ export default function Home() {
           <path
             d="M79.5,59.5Q73,69,64.5,77Q56,85,42,87Q28,89,20,76.5Q12,64,19,52.5Q26,41,28,28.5Q30,16,43.5,13.5Q57,11,65,21Q73,31,79.5,40.5Q86,50,79.5,59.5Z"
             stroke="none"
-            stroke-width="0"
+            strokeWidth="0"
             fill="#DFE7ED"
           ></path>
         </svg>

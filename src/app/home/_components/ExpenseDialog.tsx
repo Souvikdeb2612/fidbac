@@ -21,34 +21,37 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import React from "react";
+import React, { useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { Combobox } from "@/components/ui/combobox";
-import { segments } from "@/lib/dummy";
+import { createExpense } from "@/app/actions/expenses";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
   }),
-  segment: z.string().min(2, {
-    message: "Segment must be at least 2 characters.",
-  }),
-  price: z.number().min(1, {
+  segment: z.string(),
+  price: z.coerce.number().int().positive().min(1, {
     message: "Price must be more than 0.",
   }),
   date: z.date(),
 });
 
-function ExpenseDialog() {
+interface ExpenseDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  session: any;
+}
+
+function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -59,14 +62,30 @@ function ExpenseDialog() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    try {
+      const response = await createExpense({
+        title: values.title,
+        segment: values.segment,
+        price: values.price,
+        date: values.date.toISOString(),
+        userId: Number(session?.data?.user?.id),
+      });
+      // Optionally, reset the form or show a success message
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      console.error("Error creating expense:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
-    <DialogContent className="">
+    <DialogContent>
       <DialogHeader>
         <DialogTitle>Add Expense</DialogTitle>
         <DialogDescription>
@@ -93,17 +112,17 @@ function ExpenseDialog() {
             control={form.control}
             name="segment"
             render={({ field }) => (
-              <FormItem className="flex flex-col">
+              <FormItem>
                 <FormLabel>Segment</FormLabel>
                 <FormControl>
-                  {/* <Input placeholder="Grocery" {...field} /> */}
-                  <Combobox dataSet={segments} />
+                  <Input placeholder="Enter Segment" {...field} />
                 </FormControl>
-                {/* {/* <FormDescription>This is your expense segment.</FormDescription> */}
+                {/* {/* <FormDescription>This is your expense title.</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="price"
@@ -111,7 +130,7 @@ function ExpenseDialog() {
               <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <Input placeholder="shadcn" {...field} />
+                  <Input placeholder="Enter Price" {...field} />
                 </FormControl>
                 {/* <FormDescription> */}
                 {/* This is your how much you spent. */}
@@ -166,7 +185,9 @@ function ExpenseDialog() {
           />
 
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <Button type="submit" className="w-[150px]">
+              {isSubmitting ? <Loader /> : "Save changes"}
+            </Button>
           </DialogFooter>
         </form>
       </Form>

@@ -43,6 +43,33 @@ export const authOptions: NextAuthConfig = {
         return false;
       }
     },
+    async session({ session, user }) {
+      try {
+
+        if (!session.user || !session.user.email) {
+          console.error("Session user email is missing");
+          return session;
+        }
+
+        // Fetch existing user by email
+        const existingUser = await client.user.findUnique({
+          where: { email: session.user.email },
+        });
+
+        if (existingUser) {
+          console.log('Existing user found:', existingUser);
+          session.user.id = existingUser.id.toString(); // Add the id to the session object
+        } else {
+          console.warn('No existing user found for email:', session.user.email);
+        }
+
+        return session;
+      } catch (error) {
+        console.error("Error in session callback:", error);
+        return session;
+      }
+    },
+    
   }
 };
 

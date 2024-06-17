@@ -1,6 +1,5 @@
 "use client";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,17 +27,69 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { expenseList } from "@/lib/dummy";
 import { MONTHS } from "@/lib/constants";
-import { useState } from "react";
-import { fetchExpenses } from "@/db/queries/expenses";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import ExpenseDialog from "./ExpenseDialog";
+import Image from "next/image";
 
-export default function Datatable() {
-  // const expenses = await fetchExpenses();
-  // console.log("first", expenses);
+interface Expense {
+  id: number;
+  title: string;
+  price: number;
+  segment: string;
+  date: string;
+  label: string;
+}
+
+interface ExpenseDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  session: any;
+}
+
+export default function Datatable({ open, setOpen }: ExpenseDialogProps) {
+  const session = useSession();
+  const userId = session?.data?.user?.id;
 
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [month, setMonth] = useState(currentMonth);
+  const [expenseList, setExpenseList] = useState<Expense[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `/api/expense?userId=${userId}&month=${month}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch expenses");
+        }
+        const data = await response.json();
+        setExpenseList(data);
+        setError(null); // Reset error state if successful
+      } catch (error) {
+        console.error("Error fetching expenses:", error);
+        setError("Failed to fetch expenses. Please try again."); // Set error message
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, [userId, month]);
+
+  const handleMonthChange = (newMonth: string) => {
+    setMonth(newMonth);
+  };
+
   return (
     <Card>
       <CardHeader className="flex-row justify-between">
@@ -58,9 +109,12 @@ export default function Datatable() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent side="left" align="start">
-            <DropdownMenuRadioGroup value={month} onValueChange={setMonth}>
+            <DropdownMenuRadioGroup
+              value={month}
+              onValueChange={handleMonthChange}
+            >
               {MONTHS.map(({ value, label }) => (
-                <DropdownMenuRadioItem value={value}>
+                <DropdownMenuRadioItem value={value} key={label}>
                   {label}
                 </DropdownMenuRadioItem>
               ))}
@@ -69,69 +123,100 @@ export default function Datatable() {
         </DropdownMenu>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {/* <TableHead className="hidden w-[100px] sm:table-cell">
-                <span className="sr-only">Image</span>
-              </TableHead> */}
-              <TableHead>Title</TableHead>
-              <TableHead className="hidden md:table-cell">Segment</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead className="hidden md:table-cell">Date</TableHead>
-              <TableHead className="hidden md:table-cell">Label</TableHead>
-              <TableHead>
-                <span className="sr-only">Actions</span>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {expenseList.map(({ id, title, price, segment, date, label }) => (
-              <TableRow key={id.toString()}>
-                {/* <TableCell className="hidden sm:table-cell">
-                <Image
-                  alt="Product image"
-                  className="aspect-square rounded-md object-cover"
-                  height="64"
-                  src="/placeholder.svg"
-                  width="64"
-                />
-              </TableCell> */}
-                <TableCell className="font-medium">{title}</TableCell>
-
-                <TableCell className="hidden md:table-cell">
-                  {segment}
-                </TableCell>
-                <TableCell>${price}</TableCell>
-                <TableCell className="hidden md:table-cell">{date}</TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <Badge variant="outline">{label}</Badge>
-                </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+        {loading ? (
+          <>
+            <Skeleton className="h-10 w-full mb-2" />
+            <Skeleton className="h-10 w-full mb-2" />
+            <Skeleton className="h-10 w-full mb-2" />
+          </>
+        ) : error ? (
+          <div className="text-red-500">{error}</div>
+        ) : expenseList.length > 0 ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead className="hidden md:table-cell">Segment</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead className="hidden md:table-cell">Date</TableHead>
+                <TableHead className="hidden md:table-cell">Label</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {expenseList.map(({ id, title, price, segment, date, label }) => (
+                <TableRow key={id.toString()}>
+                  <TableCell className="font-medium">{title}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {segment}
+                  </TableCell>
+                  <TableCell>${price}</TableCell>
+                  <TableCell className="hidden md:table-cell">{date}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Badge variant="outline">{label}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Table>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={6} className="text-center">
+                  <div className="flex flex-col items-center">
+                    <Image
+                      alt="add new expense"
+                      src="https://illustrations.popsy.co/gray/woman-on-laptop.svg"
+                      height={200}
+                      width={200}
+                    />
+                    <Dialog open={open} onOpenChange={setOpen}>
+                      <DialogTrigger asChild>
+                        <Button>Add New Expense</Button>
+                      </DialogTrigger>
+                      <ExpenseDialog
+                        open={open}
+                        setOpen={setOpen}
+                        session={session}
+                      />
+                    </Dialog>
+                  </div>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
-      <CardFooter>
-        <div className="text-xs text-muted-foreground">
-          Showing <strong>1-10</strong> of <strong>32</strong> products
-        </div>
-      </CardFooter>
+      {!loading && !error && (
+        <CardFooter>
+          <div className="text-xs text-muted-foreground">
+            Showing <strong>1-10</strong> of{" "}
+            <strong>{expenseList.length}</strong> products
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }

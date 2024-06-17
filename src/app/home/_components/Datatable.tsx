@@ -31,8 +31,12 @@ import {
 import { expenseList } from "@/lib/dummy";
 import { MONTHS } from "@/lib/constants";
 import { useState } from "react";
+import { fetchExpenses } from "@/db/queries/expenses";
 
 export default function Datatable() {
+  // const expenses = await fetchExpenses();
+  // console.log("first", expenses);
+
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [month, setMonth] = useState(currentMonth);
   return (

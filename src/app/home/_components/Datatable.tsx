@@ -1,5 +1,5 @@
-import Image from "next/image";
-import { MoreHorizontal } from "lucide-react";
+"use client";
+import { ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -27,15 +29,40 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { expenseList } from "@/lib/dummy";
+import { MONTHS } from "@/lib/constants";
+import { useState } from "react";
 
 export default function Datatable() {
+  const currentMonth = new Date().toLocaleString("default", { month: "long" });
+  const [month, setMonth] = useState(currentMonth);
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Expenses</CardTitle>
-        <CardDescription>
-          Manage your expenses and view their performance.
-        </CardDescription>
+      <CardHeader className="flex-row justify-between">
+        <div>
+          <CardTitle>Expenses</CardTitle>
+          <CardDescription>
+            Manage your expenses and view their performance.
+          </CardDescription>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <div className="flex items-center gap-2">
+                <ChevronDown />
+                <p className="capitalize">{month}</p>
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="left" align="start">
+            <DropdownMenuRadioGroup value={month} onValueChange={setMonth}>
+              {MONTHS.map(({ value, label }) => (
+                <DropdownMenuRadioItem value={value}>
+                  {label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </CardHeader>
       <CardContent>
         <Table>

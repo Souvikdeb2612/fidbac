@@ -50,8 +50,11 @@ interface ExpenseDialogProps {
   session: any;
 }
 
-export default function Datatable({ open, setOpen }: ExpenseDialogProps) {
-  const session = useSession();
+export default function Datatable({
+  open,
+  setOpen,
+  session,
+}: ExpenseDialogProps) {
   const userId = session?.data?.user?.id;
 
   const currentMonth = new Date().toLocaleString("default", { month: "long" });

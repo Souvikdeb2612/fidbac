@@ -18,8 +18,11 @@ interface ExpenseDialogProps {
   setOpen: (open: boolean) => void;
   session: any;
 }
-export default function AddEntry({ open, setOpen }: ExpenseDialogProps) {
-  const session = useSession();
+export default function AddEntry({
+  open,
+  setOpen,
+  session,
+}: ExpenseDialogProps) {
   return (
     <Card>
       <CardHeader className="pb-3">

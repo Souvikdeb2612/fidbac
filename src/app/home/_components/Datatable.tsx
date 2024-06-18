@@ -34,6 +34,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ExpenseDialog from "./ExpenseDialog";
 import Image from "next/image";
+import { deleteExpense } from "@/app/actions/expenses";
 
 interface Expense {
   id: number;
@@ -96,6 +97,16 @@ export default function Datatable({
 
   const handleMonthChange = (newMonth: string) => {
     setMonth(newMonth);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteExpense(id);
+      // Optionally, reset the form or show a success message
+      location.reload();
+    } catch (error) {
+      console.error("Error creating expense:", error);
+    }
   };
 
   return (
@@ -180,7 +191,13 @@ export default function Datatable({
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            handleDelete(id);
+                          }}
+                        >
+                          Delete
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

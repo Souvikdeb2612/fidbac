@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { LogIn, LogOut } from "lucide-react";
 import { signIn, signOut } from "@/auth/helpers";
 import { getSession, useSession } from "next-auth/react";
+import logo from "../../../public/logo.png";
 
 function Sidebar() {
   const router = useRouter();
@@ -37,7 +38,8 @@ function Sidebar() {
   return (
     <aside className="fixed h-[calc(100vh-96px)] flex items-center flex-col overflow-y-auto bg-white">
       <Image
-        src="/logo.png"
+        unoptimized
+        src={logo}
         alt="logo"
         width={80}
         height={80}

@@ -1,18 +1,19 @@
-"use server"
+"use server";
 
-import { revalidatePath } from "next/cache";
 import client from "../../db";
 
-
-
-
-
-export async function createExpense({ title, price, segment, date, userId }:{
-    title: string,
-    price: number,
-    segment: string,
-    date: string,
-    userId: number,
+export async function createExpense({
+  title,
+  price,
+  segment,
+  date,
+  userId,
+}: {
+  title: string;
+  price: number;
+  segment: string;
+  date: string;
+  userId: number;
 }) {
   try {
     const newExpense = await client.expense.create({
@@ -28,8 +29,15 @@ export async function createExpense({ title, price, segment, date, userId }:{
   } catch (error) {
     throw new Error("Error creating expense: " + error);
   }
-  finally{
-    revalidatePath('/home')
-  }
 }
 
+export async function deleteExpense(id: number) {
+  try {
+    const deletedExpense = await client.expense.delete({
+      where: { id },
+    });
+    return deletedExpense;
+  } catch (error) {
+    throw new Error("Error deleting expense: " + error);
+  }
+}

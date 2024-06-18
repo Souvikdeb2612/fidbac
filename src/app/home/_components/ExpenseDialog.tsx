@@ -32,7 +32,6 @@ import { CalendarIcon, Loader } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { createExpense } from "@/app/actions/expenses";
-import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -75,6 +74,7 @@ function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
         userId: Number(session?.data?.user?.id),
       });
       // Optionally, reset the form or show a success message
+      location.reload();
       form.reset();
       setOpen(false);
     } catch (error) {

@@ -37,6 +37,7 @@ function Sidebar() {
   return (
     <aside className="fixed h-[calc(100vh-96px)] flex items-center flex-col overflow-y-auto bg-white">
       <Image
+        unoptimized
         src="/logo.png"
         alt="logo"
         width={80}

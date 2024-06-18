@@ -88,6 +88,11 @@ export default function Datatable({
 
     fetchData();
   }, [userId, month]);
+  useEffect(() => {
+    if (!session.data) {
+      setLoading(true);
+    }
+  }, [session]);
 
   const handleMonthChange = (newMonth: string) => {
     setMonth(newMonth);

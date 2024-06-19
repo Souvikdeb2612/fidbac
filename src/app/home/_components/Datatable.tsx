@@ -37,6 +37,7 @@ import Image from "next/image";
 import { deleteExpense } from "@/app/actions/expenses";
 import axios from "axios";
 import { format, parseISO } from "date-fns";
+
 interface Expense {
   id: number;
   title: string;
@@ -64,6 +65,9 @@ export default function Datatable({
   const [expenseList, setExpenseList] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [totalExpenses, setTotalExpenses] = useState(0);
 
   useEffect(() => {
     if (!userId) return;
@@ -72,13 +76,10 @@ export default function Datatable({
       setLoading(true);
       try {
         const response = await axios.get(
-          `/api/expense?userId=${userId}&month=${month}`
+          `/api/expense?userId=${userId}&month=${month}&page=${page}&pageSize=${pageSize}`
         );
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch expenses");
-        // }
-        // const data = await response.json();
-        setExpenseList(response.data);
+        setExpenseList(response.data.expenses);
+        setTotalExpenses(response.data.total);
         setError(null); // Reset error state if successful
       } catch (error) {
         console.error("Error fetching expenses:", error);
@@ -89,7 +90,8 @@ export default function Datatable({
     }
 
     fetchData();
-  }, [userId, month]);
+  }, [userId, month, page, pageSize]);
+
   useEffect(() => {
     if (!session.data) {
       setLoading(true);
@@ -98,17 +100,19 @@ export default function Datatable({
 
   const handleMonthChange = (newMonth: string) => {
     setMonth(newMonth);
+    setPage(1); // Reset to first page on month change
   };
 
   const handleDelete = async (id: number) => {
     try {
       await deleteExpense(id);
-      // Optionally, reset the form or show a success message
-      location.reload();
+      location.reload(); // Optionally, you could refetch data here instead
     } catch (error) {
-      console.error("Error creating expense:", error);
+      console.error("Error deleting expense:", error);
     }
   };
+
+  const totalPages = Math.ceil(totalExpenses / pageSize);
 
   return (
     <Card>
@@ -174,7 +178,6 @@ export default function Datatable({
                   </TableCell>
                   <TableCell>${price}</TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {" "}
                     {format(parseISO(date), "PP")}
                   </TableCell>
                   {/* <TableCell className="hidden md:table-cell">
@@ -195,11 +198,7 @@ export default function Datatable({
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-                        <DropdownMenuItem
-                          onClick={() => {
-                            handleDelete(id);
-                          }}
-                        >
+                        <DropdownMenuItem onClick={() => handleDelete(id)}>
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -240,9 +239,28 @@ export default function Datatable({
       </CardContent>
       {!loading && !error && (
         <CardFooter>
-          <div className="text-xs text-muted-foreground">
-            Showing <strong>1-10</strong> of{" "}
-            <strong>{expenseList.length}</strong> products
+          <div className="flex justify-between items-center w-full text-xs text-muted-foreground">
+            <p>
+              Showing <strong>{(page - 1) * pageSize + 1}</strong> to{" "}
+              <strong>{Math.min(page * pageSize, totalExpenses)}</strong> of{" "}
+              <strong>{totalExpenses}</strong> expenses
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setPage(page + 1)}
+                disabled={page === totalPages}
+              >
+                Next
+              </Button>
+            </div>
           </div>
         </CardFooter>
       )}

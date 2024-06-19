@@ -2,11 +2,8 @@ import client from '../index';
 import { startOfMonth, endOfMonth, parse, subWeeks, subMonths } from 'date-fns'; // Import date-fns functions
 import { startOfWeek, endOfWeek } from 'date-fns';
 
-export async function fetchExpenses(userId: string, month: string) {
-    // Parse month string to Date object
+export async function fetchExpenses(userId:string, month:string, page = 1, pageSize = 10) {
     const parsedMonth = parse(month, 'MMMM', new Date());
-
-    // Calculate start and end of month
     const startDate = startOfMonth(parsedMonth);
     const endDate = endOfMonth(parsedMonth);
 
@@ -19,14 +16,26 @@ export async function fetchExpenses(userId: string, month: string) {
                     lt: endDate,
                 },
             },
-            orderBy: [
-                {
-                    date: 'desc',
-                }
-            ],
+            orderBy: [{ date: 'desc' }],
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+        });
+        
+
+        const totalExpenses = await client.expense.count({
+            where: {
+                userId: Number(userId),
+                date: {
+                    gte: startDate,
+                    lt: endDate,
+                },
+            },
         });
 
-        return expenses;
+        return {
+            expenses,
+            total: totalExpenses,
+        };
     } catch (error) {
         console.error('Error fetching expenses:', error);
         throw new Error('Failed to fetch expenses');

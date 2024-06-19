@@ -13,43 +13,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function InfoCard({
-  session,
+  data,
   type,
+  loading,
 }: {
-  session: any;
+  data: any;
   type: string;
+  loading: boolean;
 }) {
-  const [data, setData] = useState({ total: 0, percentageChange: 0 });
-  const [loading, setLoading] = useState(false);
-  const userId = session?.data?.user?.id;
-
-  useEffect(() => {
-    if (!userId) return;
-    setLoading(true);
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`/api/expense-info?userId=${userId}`);
-        if (type === "week") {
-          setData(response.data.weekly);
-        } else if (type === "month") {
-          setData(response.data.monthly);
-        }
-      } catch (error) {
-        console.error("Error fetching expenses:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userId, type]);
-
-  useEffect(() => {
-    if (!session.data) {
-      setLoading(true);
-    }
-  }, [session]);
-
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">

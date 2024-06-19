@@ -159,7 +159,7 @@ export default function Datatable({
                 <TableHead className="hidden md:table-cell">Segment</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead className="hidden md:table-cell">Date</TableHead>
-                <TableHead className="hidden md:table-cell">Label</TableHead>
+                {/* <TableHead className="hidden md:table-cell">Label</TableHead> */}
                 <TableHead>
                   <span className="sr-only">Actions</span>
                 </TableHead>
@@ -177,9 +177,9 @@ export default function Datatable({
                     {" "}
                     {format(parseISO(date), "PP")}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  {/* <TableCell className="hidden md:table-cell">
                     <Badge variant="outline">{label}</Badge>
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -194,7 +194,7 @@ export default function Datatable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
                         <DropdownMenuItem
                           onClick={() => {
                             handleDelete(id);

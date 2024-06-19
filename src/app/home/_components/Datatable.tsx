@@ -35,7 +35,8 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ExpenseDialog from "./ExpenseDialog";
 import Image from "next/image";
 import { deleteExpense } from "@/app/actions/expenses";
-
+import axios from "axios";
+import { format, parseISO } from "date-fns";
 interface Expense {
   id: number;
   title: string;
@@ -70,14 +71,14 @@ export default function Datatable({
     async function fetchData() {
       setLoading(true);
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `/api/expense?userId=${userId}&month=${month}`
         );
-        if (!response.ok) {
-          throw new Error("Failed to fetch expenses");
-        }
-        const data = await response.json();
-        setExpenseList(data);
+        // if (!response.ok) {
+        //   throw new Error("Failed to fetch expenses");
+        // }
+        // const data = await response.json();
+        setExpenseList(response.data);
         setError(null); // Reset error state if successful
       } catch (error) {
         console.error("Error fetching expenses:", error);
@@ -172,7 +173,10 @@ export default function Datatable({
                     {segment}
                   </TableCell>
                   <TableCell>${price}</TableCell>
-                  <TableCell className="hidden md:table-cell">{date}</TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {" "}
+                    {format(parseISO(date), "PP")}
+                  </TableCell>
                   <TableCell className="hidden md:table-cell">
                     <Badge variant="outline">{label}</Badge>
                   </TableCell>

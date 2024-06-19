@@ -16,10 +16,10 @@ function Page() {
           <AddEntry open={open} setOpen={setOpen} session={session} />
         </div>
         <div className="col-span-1">
-          <InfoCard />
+          <InfoCard session={session} type="week" />
         </div>
         <div className="col-span-1">
-          <InfoCard />
+          <InfoCard session={session} type="month" />
         </div>
       </div>
       <Datatable open={open} setOpen={setOpen} session={session} />

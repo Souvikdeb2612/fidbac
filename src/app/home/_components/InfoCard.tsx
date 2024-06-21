@@ -8,7 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { currency } from "@/lib/utils";
+import { currencyFormat } from "@/lib/utils";
+import useCurrencyStore from "../../../stores/currency-store";
 
 export default function InfoCard({
   data,
@@ -19,7 +20,10 @@ export default function InfoCard({
   type: string;
   loading: boolean;
 }) {
-  const currencyType = localStorage.getItem("currency");
+  const { currency } = useCurrencyStore((state) => ({
+    currency: state.currency,
+  }));
+
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
@@ -32,7 +36,7 @@ export default function InfoCard({
               <Skeleton className="h-10 w-[150px]" />
             ) : (
               <p>
-                {currency(currencyType || "Dollar")}
+                {currencyFormat(currency)}
                 {data?.total}
               </p>
             )}

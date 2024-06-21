@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-export function currency(value: string){
+export function currencyFormat(value: string){
   if (value==='Dollar'){
     return '$'
   }

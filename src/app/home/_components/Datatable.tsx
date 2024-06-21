@@ -37,7 +37,8 @@ import Image from "next/image";
 import { deleteExpense } from "@/app/actions/expenses";
 import axios from "axios";
 import { format, parseISO } from "date-fns";
-import { currency } from "@/lib/utils";
+import { currencyFormat } from "@/lib/utils";
+import useCurrencyStore from "../../../stores/currency-store";
 
 interface Expense {
   id: number;
@@ -70,6 +71,10 @@ export default function Datatable({
   const [pageSize] = useState(5);
   const [totalExpenses, setTotalExpenses] = useState(0);
 
+  const { currency } = useCurrencyStore((state) => ({
+    currency: state.currency,
+  }));
+
   useEffect(() => {
     if (!userId) return;
 
@@ -94,7 +99,7 @@ export default function Datatable({
   }, [userId, month, page, pageSize]);
 
   useEffect(() => {
-    if (!session.data) {
+    if (!session?.data) {
       setLoading(true);
     }
   }, [session]);
@@ -114,8 +119,6 @@ export default function Datatable({
   };
 
   const totalPages = Math.ceil(totalExpenses / pageSize);
-
-  const currencyType = localStorage.getItem("currency");
 
   return (
     <Card>
@@ -180,7 +183,7 @@ export default function Datatable({
                     {segment}
                   </TableCell>
                   <TableCell>
-                    {currency(currencyType || "Dollar")}
+                    {currencyFormat(currency)}
                     {price}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">

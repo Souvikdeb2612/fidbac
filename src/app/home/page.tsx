@@ -17,18 +17,27 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { updateCurrency } from "../actions/currency";
+import useCurrencyStore from "@/stores/currency-store";
 
 function Page() {
-  const session = useSession();
+  const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
-  const userId = session?.data?.user?.id;
+  const userId = session?.user?.id;
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ weekly: {}, monthly: {} });
-  const [selectedCurrency, setSelectedCurrency] = useState("Dollar");
+  // const [selectedCurrency, setSelectedCurrency] = useState("Dollar");
+
+  const { currency, setCurrency, fetchCurrency } = useCurrencyStore(
+    (state) => ({
+      currency: state.currency,
+      setCurrency: state.setCurrency,
+      fetchCurrency: state.fetchCurrency,
+    })
+  );
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) return;
+    if (!isOpen || currency) return; // Only open if isOpen is true and currency is empty
     setCurrencyOpen(isOpen);
   };
 
@@ -36,7 +45,7 @@ function Page() {
     try {
       await updateCurrency({
         userId: Number(userId),
-        currency: selectedCurrency,
+        currency: currency,
       });
       setCurrencyOpen(false);
     } catch (error) {
@@ -62,26 +71,14 @@ function Page() {
   }, [userId]);
 
   useEffect(() => {
-    if (!session.data) {
+    if (!session) {
       setLoading(true);
     }
   }, [session]);
 
   useEffect(() => {
     if (userId) {
-      axios
-        .get(`/api/get-currency?userId=${userId}`)
-        .then((response) => {
-          if (response.data.currency) {
-            setSelectedCurrency(response.data.currency);
-            localStorage.setItem("currency", response.data.currency);
-          } else {
-            setCurrencyOpen(true);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching expenses:", error);
-        });
+      fetchCurrency(Number(userId));
     }
   }, [userId]);
 
@@ -104,8 +101,8 @@ function Page() {
           <DialogHeader>
             <DialogTitle className="mb-6">Select Currency</DialogTitle>
             <RadioGroup
-              value={selectedCurrency}
-              onValueChange={setSelectedCurrency}
+              value={currency}
+              onValueChange={setCurrency}
               className="px-4"
             >
               <div className="flex items-center justify-between space-x-2">

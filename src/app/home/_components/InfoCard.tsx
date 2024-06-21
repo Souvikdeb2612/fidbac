@@ -4,13 +4,11 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { currency } from "@/lib/utils";
 
 export default function InfoCard({
   data,
@@ -21,6 +19,7 @@ export default function InfoCard({
   type: string;
   loading: boolean;
 }) {
+  const currencyType = localStorage.getItem("currency");
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
@@ -32,7 +31,10 @@ export default function InfoCard({
             {loading ? (
               <Skeleton className="h-10 w-[150px]" />
             ) : (
-              <p>${data?.total}</p>
+              <p>
+                {currency(currencyType || "Dollar")}
+                {data?.total}
+              </p>
             )}
           </div>
         </CardTitle>

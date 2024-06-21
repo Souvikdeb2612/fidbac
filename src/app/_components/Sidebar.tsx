@@ -19,6 +19,7 @@ function Sidebar() {
 
   const handleSignOut = async () => {
     await signOut();
+    localStorage.removeItem("currency");
     const sess = await getSession();
     setIsSession(!!sess);
     router.push("/");

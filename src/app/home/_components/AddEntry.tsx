@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ExpenseDialog from "./ExpenseDialog";
-import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface ExpenseDialogProps {

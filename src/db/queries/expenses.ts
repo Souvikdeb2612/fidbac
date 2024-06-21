@@ -1,4 +1,4 @@
-import client from '../index';
+import client from '@/db';
 import { startOfMonth, endOfMonth, parse, subWeeks, subMonths } from 'date-fns'; // Import date-fns functions
 import { startOfWeek, endOfWeek } from 'date-fns';
 

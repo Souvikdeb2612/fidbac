@@ -58,7 +58,7 @@ export const authOptions: NextAuthConfig = {
 
         if (existingUser) {
           console.log('Existing user found:', existingUser);
-          session.user.id = existingUser.id.toString(); // Add the id to the session object
+          session.user.id = existingUser.id.toString(); 
         } else {
           console.warn('No existing user found for email:', session.user.email);
         }

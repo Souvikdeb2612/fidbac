@@ -37,6 +37,7 @@ import Image from "next/image";
 import { deleteExpense } from "@/app/actions/expenses";
 import axios from "axios";
 import { format, parseISO } from "date-fns";
+import { currency } from "@/lib/utils";
 
 interface Expense {
   id: number;
@@ -114,6 +115,8 @@ export default function Datatable({
 
   const totalPages = Math.ceil(totalExpenses / pageSize);
 
+  const currencyType = localStorage.getItem("currency");
+
   return (
     <Card>
       <CardHeader className="flex-row justify-between">
@@ -176,7 +179,10 @@ export default function Datatable({
                   <TableCell className="hidden md:table-cell">
                     {segment}
                   </TableCell>
-                  <TableCell>${price}</TableCell>
+                  <TableCell>
+                    {currency(currencyType || "Dollar")}
+                    {price}
+                  </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {format(parseISO(date), "PP")}
                   </TableCell>

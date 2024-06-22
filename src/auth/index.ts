@@ -1,6 +1,6 @@
-import NextAuth, {  NextAuthConfig } from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import client from "@/db"
+import client from "@/db";
 
 export const BASE_PATH = "/api/auth";
 
@@ -10,7 +10,6 @@ export const authOptions: NextAuthConfig = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    
   ],
   basePath: BASE_PATH,
   secret: process.env.NEXTAUTH_SECRET,
@@ -32,7 +31,6 @@ export const authOptions: NextAuthConfig = {
             data: {
               email: user.email,
               name: user.name ?? "Anonymous",
-      
             },
           });
         }
@@ -45,7 +43,6 @@ export const authOptions: NextAuthConfig = {
     },
     async session({ session, user }) {
       try {
-
         if (!session.user || !session.user.email) {
           console.error("Session user email is missing");
           return session;
@@ -58,7 +55,7 @@ export const authOptions: NextAuthConfig = {
 
         if (existingUser) {
           console.log('Existing user found:', existingUser);
-          session.user.id = existingUser.id.toString(); 
+          session.user.id = existingUser.id.toString();
         } else {
           console.warn('No existing user found for email:', session.user.email);
         }
@@ -69,9 +66,7 @@ export const authOptions: NextAuthConfig = {
         return session;
       }
     },
-    
   }
 };
-
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);

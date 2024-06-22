@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/table";
 import { MONTHS } from "@/lib/constants";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ExpenseDialog from "./ExpenseDialog";
@@ -60,7 +59,7 @@ export default function Datatable({
   setOpen,
   session,
 }: ExpenseDialogProps) {
-  const userId = session?.data?.user?.id;
+  const userId = session?.user?.id;
 
   const currentMonth = new Date().toLocaleString("default", { month: "long" });
   const [month, setMonth] = useState(currentMonth);
@@ -99,7 +98,7 @@ export default function Datatable({
   }, [userId, month, page, pageSize]);
 
   useEffect(() => {
-    if (!session?.data) {
+    if (!session?.user) {
       setLoading(true);
     }
   }, [session]);

@@ -18,15 +18,18 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { updateCurrency } from "../actions/currency";
 import useCurrencyStore from "@/stores/currency-store";
+import { Loader } from "lucide-react";
 
 function Page() {
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const [currencyOpen, setCurrencyOpen] = useState(false);
+  const [currencyLoading, setCurrencyLoading] = useState(false);
   const userId = session?.user?.id;
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({ weekly: {}, monthly: {} });
   // const [selectedCurrency, setSelectedCurrency] = useState("Dollar");
+  const [currencyFetched, setCurrencyFetched] = useState(false);
 
   const { currency, setCurrency, fetchCurrency } = useCurrencyStore(
     (state) => ({
@@ -42,6 +45,7 @@ function Page() {
   };
 
   const handleSaveClick = async () => {
+    setCurrencyLoading(true);
     try {
       await updateCurrency({
         userId: Number(userId),
@@ -50,6 +54,8 @@ function Page() {
       setCurrencyOpen(false);
     } catch (error) {
       console.error("Error saving currency:", error);
+    } finally {
+      setCurrencyLoading(false);
     }
   };
 
@@ -78,9 +84,19 @@ function Page() {
 
   useEffect(() => {
     if (userId) {
-      fetchCurrency(Number(userId));
+      const fetchUserCurrency = async () => {
+        await fetchCurrency(Number(userId));
+        setCurrencyFetched(true);
+      };
+      fetchUserCurrency();
     }
-  }, [userId]);
+  }, [userId, fetchCurrency]);
+
+  useEffect(() => {
+    if (currencyFetched && !currency) {
+      setCurrencyOpen(true);
+    }
+  }, [currencyFetched, currency]);
 
   return (
     <div className="grid gap-3">
@@ -134,7 +150,9 @@ function Page() {
               </div>
             </RadioGroup>
           </DialogHeader>
-          <Button onClick={handleSaveClick}>Save</Button>
+          <Button onClick={handleSaveClick}>
+            {currencyLoading ? <Loader /> : "Save"}
+          </Button>
         </DialogContent>
       </Dialog>
     </div>

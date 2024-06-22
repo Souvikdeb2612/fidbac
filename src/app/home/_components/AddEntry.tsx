@@ -27,8 +27,8 @@ export default function AddEntry({
         <CardTitle className="flex gap-1">
           Hi
           <div>
-            {session?.data?.user?.name ? (
-              <span>{session?.data?.user?.name}!</span>
+            {session?.user?.name ? (
+              <span>{session?.user?.name}!</span>
             ) : (
               <Skeleton className="h-4 w-[100px]" />
             )}

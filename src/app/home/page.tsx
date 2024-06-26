@@ -100,14 +100,14 @@ function Page() {
 
   return (
     <div className="grid gap-3">
-      <div className="grid grid-cols-4 gap-2 items-stretch">
-        <div className="col-span-2">
+      <div className="md:grid grid-cols-4 gap-2 items-stretch">
+        <div className="col-span-2 ">
           <AddEntry open={open} setOpen={setOpen} session={session} />
         </div>
-        <div className="col-span-1">
+        <div className="col-span-1 max-md:mt-2">
           <InfoCard data={data.weekly} type="week" loading={loading} />
         </div>
-        <div className="col-span-1">
+        <div className="col-span-1 max-md:mt-2">
           <InfoCard data={data.monthly} type="month" loading={loading} />
         </div>
       </div>

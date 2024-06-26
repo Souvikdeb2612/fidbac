@@ -121,12 +121,12 @@ export default function Datatable({
 
   return (
     <Card>
-      <CardHeader className="flex-row justify-between">
+      <CardHeader className="flex-row justify-between items-center">
         <div>
           <CardTitle>Expenses</CardTitle>
-          <CardDescription>
+          {/* <CardDescription>
             Manage your expenses and view their performance.
-          </CardDescription>
+          </CardDescription> */}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -247,17 +247,18 @@ export default function Datatable({
       </CardContent>
       {!loading && !error && (
         <CardFooter>
-          <div className="flex justify-between items-center w-full text-xs text-muted-foreground">
-            <p>
+          <div className="md:flex justify-between items-center w-full text-xs text-muted-foreground">
+            <p className="max-md:mb-3">
               Showing <strong>{(page - 1) * pageSize + 1}</strong> to{" "}
               <strong>{Math.min(page * pageSize, totalExpenses)}</strong> of{" "}
               <strong>{totalExpenses}</strong> expenses
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 max-md:justify-end">
               <Button
                 variant="outline"
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
+                className="w-full"
               >
                 Previous
               </Button>
@@ -265,6 +266,7 @@ export default function Datatable({
                 variant="outline"
                 onClick={() => setPage(page + 1)}
                 disabled={page === totalPages}
+                className="w-full"
               >
                 Next
               </Button>

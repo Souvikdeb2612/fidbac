@@ -34,15 +34,15 @@ export default function AddEntry({
             )}
           </div>
         </CardTitle>
-        <CardDescription className="max-w-lg text-balance leading-relaxed">
-          Introducing Our Dynamic Orders Dashboard for Seamless Management and
-          Insightful Analysis.
+        <CardDescription className="max-w-lg md:text-balance leading-relaxed">
+          Manage your expenses efficiently with our intuitive dashboard. Add,
+          view, and analyze your expenses with ease.
         </CardDescription>
       </CardHeader>
       <CardFooter>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button>Add New Expense</Button>
+            <Button className="max-md:w-full">Add New Expense</Button>
           </DialogTrigger>
           <ExpenseDialog open={open} setOpen={setOpen} session={session} />
         </Dialog>

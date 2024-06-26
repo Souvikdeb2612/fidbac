@@ -1,4 +1,6 @@
 "use client";
+
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -71,7 +73,7 @@ function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
         segment: values.segment,
         price: values.price,
         date: values.date.toISOString(),
-        userId: Number(session?.data?.user?.id),
+        userId: Number(session?.user?.id),
       });
       // Optionally, reset the form or show a success message
       location.reload();

@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Sidebar from "./_components/Sidebar";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Script from "next/script"; // Import the Script component
 
 import "./globals.css";
 import { inter } from "./fonts";
-import { useSession } from "next-auth/react";
 import SessionWrapper from "./_components/SessionWrapper";
 
 export const metadata: Metadata = {
@@ -20,11 +20,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          defer
+          data-domain="fidbac.xyz"
+          src="https://plausible.io/js/script.js"
+        />
+      </head>
       <body className={cn(inter.className)}>
         <SessionWrapper>
           <div className="flex py-6 pr-6 h-screen relative">
             <Sidebar />
-
             <div className="ml-[80px] p-2 flex-grow bg-muted rounded-2xl">
               <ScrollArea className="h-full w-full rounded-2xl p-4">
                 {children}

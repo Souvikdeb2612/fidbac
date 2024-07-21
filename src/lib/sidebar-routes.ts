@@ -1,4 +1,4 @@
-import { BookOpen, Code, Home, MonitorPlay } from "lucide-react";
+import { BookOpen, Code, Home, MonitorPlay, Tag } from "lucide-react";
 
 export const routes = [
     {
@@ -7,9 +7,9 @@ export const routes = [
         href: '/home',
     },
     {
-        icon: BookOpen,
-        label: 'My Courses',
-        href: '/student/courses',
+        icon: Tag,
+        label: 'Categories',
+        href: '/categories',
         // subtabs: [],
     },
     // {

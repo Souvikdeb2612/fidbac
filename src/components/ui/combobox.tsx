@@ -1,9 +1,7 @@
-"use client";
+// combobox.tsx
 
 import * as React from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -19,9 +17,32 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function Combobox({ dataSet }: any) {
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface ComboboxProps {
+  options: Option[];
+  placeholder: string;
+  value: Option | null;
+  onChange: (selectedOption: Option | null) => void;
+}
+
+export function Combobox({
+  options,
+  placeholder,
+  value,
+  onChange,
+}: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+
+  const handleSelect = (selectedOption: Option) => {
+    onChange(
+      value && value.value === selectedOption.value ? null : selectedOption
+    );
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -30,38 +51,30 @@ export function Combobox({ dataSet }: any) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn(
-            "justify-between font-normal",
-            value ? "" : " text-muted-foreground"
-          )}
+          className="w-full justify-between font-normal"
         >
-          {value
-            ? dataSet.find((data: any) => data.value === value)?.label
-            : "Select Segment..."}
+          {value ? value.label : `Select ${placeholder}`}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className=" p-0" side="left" align="start">
+      <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder="Search data..." className="h-9" />
+          <CommandInput placeholder={`Search${placeholder}`} className="h-9" />
           <CommandList>
-            <CommandEmpty>No data found.</CommandEmpty>
+            <CommandEmpty>No options found.</CommandEmpty>
             <CommandGroup>
-              {dataSet.map((data: any) => (
+              {options.map((option) => (
                 <CommandItem
-                  key={data.value}
-                  value={data.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
-                    setOpen(false);
-                  }}
+                  key={option.value}
+                  onSelect={() => handleSelect(option)}
                 >
-                  {data.label}
+                  {option.label}
                   <CheckIcon
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value === data.value ? "opacity-100" : "opacity-0"
-                    )}
+                    className={`ml-auto h-4 w-4 ${
+                      value?.value === option.value
+                        ? "opacity-100"
+                        : "opacity-0"
+                    }`}
                   />
                 </CommandItem>
               ))}

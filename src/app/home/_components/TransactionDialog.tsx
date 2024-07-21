@@ -1,6 +1,7 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,6 @@ import {
 import {
   Form,
   FormControl,
-  //   FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -31,49 +31,65 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon, Loader } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { createExpense } from "@/app/actions/expenses";
+import { createTransaction } from "@/app/actions/transaction";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { category } from "@/lib/dummy";
+import { Combobox } from "@/components/ui/combobox";
 
 const formSchema = z.object({
   title: z.string().min(2, {
     message: "Title must be at least 2 characters.",
   }),
-  segment: z.string(),
-  price: z.coerce.number().int().positive().min(1, {
+  category: z
+    .object({
+      value: z.string(),
+      label: z.string(),
+    })
+    .nullable(),
+  amount: z.coerce.number().int().positive().min(1, {
     message: "Price must be more than 0.",
   }),
   date: z.date(),
 });
 
-interface ExpenseDialogProps {
+interface TransactionDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   session: any;
 }
 
-function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
+function TransactionDialog({ open, setOpen, session }: TransactionDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      segment: "",
-      price: 0,
+      category: null,
+      amount: 0,
       date: new Date(),
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transactionType, setTransactionType] = useState<"expense" | "income">(
+    "expense"
+  );
+
+  const handleTransactionType = (value: "expense" | "income") => {
+    setTransactionType(value);
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
-      const response = await createExpense({
+      const response = await createTransaction({
         title: values.title,
-        segment: values.segment,
-        price: values.price,
+        category: values.category?.value || "",
+        amount: values.amount,
         date: values.date.toISOString(),
-        userId: Number(session?.data?.user?.id),
+        userId: Number(session?.user?.id),
+        type: transactionType,
       });
-      // Optionally, reset the form or show a success message
       location.reload();
       form.reset();
       setOpen(false);
@@ -87,11 +103,25 @@ function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Add Expense</DialogTitle>
+        <DialogTitle>Add Transaction</DialogTitle>
         <DialogDescription>
-          Add to your expenses here. Click save when you are done.
+          Add to your transactions here. Click save when you are done.
         </DialogDescription>
       </DialogHeader>
+      <RadioGroup
+        defaultValue={transactionType}
+        className="flex"
+        onValueChange={handleTransactionType}
+      >
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="expense" id="r1" />
+          <Label htmlFor="r1">Expense</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="income" id="r2" />
+          <Label htmlFor="r2">Income</Label>
+        </div>
+      </RadioGroup>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -103,38 +133,43 @@ function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
                 <FormControl>
                   <Input placeholder="Enter Title" {...field} />
                 </FormControl>
-                {/* {/* <FormDescription>This is your expense title.</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="segment"
+            name="category"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Segment</FormLabel>
+                <FormLabel>Category</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter Segment" {...field} />
+                  <Controller
+                    name="category"
+                    control={form.control}
+                    render={({ field }) => (
+                      <Combobox
+                        options={category}
+                        placeholder=" Category"
+                        onChange={field.onChange}
+                        value={field.value}
+                      />
+                    )}
+                  />
                 </FormControl>
-                {/* {/* <FormDescription>This is your expense title.</FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
-            name="price"
+            name="amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Price</FormLabel>
+                <FormLabel>Amount</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter Price" {...field} />
+                  <Input placeholder="Enter Amount" {...field} />
                 </FormControl>
-                {/* <FormDescription> */}
-                {/* This is your how much you spent. */}
-                {/* </FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
@@ -176,14 +211,10 @@ function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
                     />
                   </PopoverContent>
                 </Popover>
-                {/* <FormDescription> */}
-                {/* This is the date when you made the expense. */}
-                {/* </FormDescription> */}
                 <FormMessage />
               </FormItem>
             )}
           />
-
           <DialogFooter>
             <Button type="submit" className="w-[150px]">
               {isSubmitting ? <Loader /> : "Save changes"}
@@ -195,4 +226,4 @@ function ExpenseDialog({ open, setOpen, session }: ExpenseDialogProps) {
   );
 }
 
-export default ExpenseDialog;
+export default TransactionDialog;

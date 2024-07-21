@@ -9,7 +9,7 @@ export async function GET(request: any) {
         const currency = await getCurrency(Number(userId));
         return NextResponse.json({currency});
     } catch (error) {
-        console.error('Failed to fetch expenses:', error);
-        return NextResponse.json({ error: 'Failed to fetch expenses' }, { status: 500 });
+        console.error('Failed to fetch currency:', error);
+        return NextResponse.json({ error: 'Failed to fetch currency' }, { status: 500 });
     }
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchExpenses } from '@/db/queries/expenses';
+import { fetchTransactions } from '@/db/queries/transaction';
 
 export async function GET(request: any) {
     const { searchParams } = new URL(request.url);
@@ -17,10 +17,10 @@ export async function GET(request: any) {
     }
 
     try {
-        const expenses = await fetchExpenses(userId, month, Number(page), Number(pageSize));
-        return NextResponse.json(expenses);
+        const transactions = await fetchTransactions(userId, month, Number(page), Number(pageSize));
+        return NextResponse.json(transactions);
     } catch (error) {
-        console.error('Failed to fetch expenses:', error);
-        return NextResponse.json({ error: 'Failed to fetch expenses' }, { status: 500 });
+        console.error('Failed to fetch transactions:', error);
+        return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
     }
 }

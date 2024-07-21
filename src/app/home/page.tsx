@@ -64,10 +64,12 @@ function Page() {
     setLoading(true);
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/api/expense-info?userId=${userId}`);
+        const response = await axios.get(
+          `/api/transaction-info?userId=${userId}`
+        );
         setData(response.data);
       } catch (error) {
-        console.error("Error fetching expenses:", error);
+        console.error("Error fetching transaction info:", error);
       } finally {
         setLoading(false);
       }

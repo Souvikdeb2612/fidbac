@@ -33,8 +33,11 @@ const config = {
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
+          DEFAULT: "#ef4444",
           foreground: "hsl(var(--destructive-foreground))",
+        },
+        green:{
+          DEFAULT: "#10b981"
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",

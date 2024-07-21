@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchExpenseInfo } from '@/db/queries/expenses';
+import { fetchTransactionInfo } from '@/db/queries/transaction';
 
 export async function GET(request:any) {
     const { searchParams } = new URL(request.url);
@@ -10,10 +10,10 @@ export async function GET(request:any) {
     }
 
     try {
-        const thisWeekData = await fetchExpenseInfo(userId);
+        const thisWeekData = await fetchTransactionInfo(userId);
         return NextResponse.json(thisWeekData);
     } catch (error) {
-        console.error('Failed to fetch this week expenses:', error);
-        return NextResponse.json({ error: 'Failed to fetch this week expenses' }, { status: 500 });
+        console.error('Failed to fetch this week transactions:', error);
+        return NextResponse.json({ error: 'Failed to fetch this week transactions' }, { status: 500 });
     }
 }

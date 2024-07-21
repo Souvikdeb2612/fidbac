@@ -8,10 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import ExpenseDialog from "./ExpenseDialog";
+import TransactionDialog from "./TransactionDialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface ExpenseDialogProps {
+interface TransactionDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   session: any;
@@ -20,7 +20,7 @@ export default function AddEntry({
   open,
   setOpen,
   session,
-}: ExpenseDialogProps) {
+}: TransactionDialogProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -35,16 +35,16 @@ export default function AddEntry({
           </div>
         </CardTitle>
         <CardDescription className="max-w-lg md:text-balance leading-relaxed">
-          Manage your expenses efficiently with our intuitive dashboard. Add,
-          view, and analyze your expenses with ease.
+          Manage your transactions efficiently with our intuitive dashboard.
+          Add, view, and analyze your transactions with ease.
         </CardDescription>
       </CardHeader>
       <CardFooter>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="max-md:w-full">Add New Expense</Button>
+            <Button className="max-md:w-full">Add New Transaction</Button>
           </DialogTrigger>
-          <ExpenseDialog open={open} setOpen={setOpen} session={session} />
+          <TransactionDialog open={open} setOpen={setOpen} session={session} />
         </Dialog>
       </CardFooter>
     </Card>

@@ -1,14 +1,14 @@
-import client from '../index';
+import client from '@/db';
 import { startOfMonth, endOfMonth, parse, subWeeks, subMonths } from 'date-fns'; // Import date-fns functions
 import { startOfWeek, endOfWeek } from 'date-fns';
 
-export async function fetchExpenses(userId:string, month:string, page = 1, pageSize = 10) {
+export async function fetchTransactions(userId:string, month:string, page = 1, pageSize = 10) {
     const parsedMonth = parse(month, 'MMMM', new Date());
     const startDate = startOfMonth(parsedMonth);
     const endDate = endOfMonth(parsedMonth);
 
     try {
-        const expenses = await client.expense.findMany({
+        const transactions = await client.transaction.findMany({
             where: {
                 userId: Number(userId),
                 date: {
@@ -22,7 +22,7 @@ export async function fetchExpenses(userId:string, month:string, page = 1, pageS
         });
         
 
-        const totalExpenses = await client.expense.count({
+        const totalTransactions = await client.transaction.count({
             where: {
                 userId: Number(userId),
                 date: {
@@ -33,16 +33,16 @@ export async function fetchExpenses(userId:string, month:string, page = 1, pageS
         });
 
         return {
-            expenses,
-            total: totalExpenses,
+            transactions,
+            total: totalTransactions,
         };
     } catch (error) {
-        console.error('Error fetching expenses:', error);
-        throw new Error('Failed to fetch expenses');
+        console.error('Error fetching transactions:', error);
+        throw new Error('Failed to fetch transactions');
     }
 }
 
-export async function fetchExpenseInfo(userId: string) {
+export async function fetchTransactionInfo(userId: string) {
     // Calculate start and end of the current week
     const startDateThisWeek = startOfWeek(new Date(), { weekStartsOn: 1 }); // Assuming Monday is the start of the week
     const endDateThisWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
@@ -60,10 +60,11 @@ export async function fetchExpenseInfo(userId: string) {
     const endDateLastMonth = endOfMonth(subMonths(new Date(), 1));
 
     try {
-        // Fetch expenses for the current week
-        const expensesThisWeek = await client.expense.findMany({
+        // Fetch transactions for the current week
+        const transactionsThisWeek = await client.transaction.findMany({
             where: {
                 userId: Number(userId),
+                type: 'expense',
                 date: {
                     gte: startDateThisWeek,
                     lte: endDateThisWeek,
@@ -76,10 +77,11 @@ export async function fetchExpenseInfo(userId: string) {
             ],
         });
 
-        // Fetch expenses for the previous week
-        const expensesLastWeek = await client.expense.findMany({
+        // Fetch transactions for the previous week
+        const transactionsLastWeek = await client.transaction.findMany({
             where: {
                 userId: Number(userId),
+                type: 'expense',
                 date: {
                     gte: startDateLastWeek,
                     lte: endDateLastWeek,
@@ -92,10 +94,11 @@ export async function fetchExpenseInfo(userId: string) {
             ],
         });
 
-        // Fetch expenses for the current month
-        const expensesThisMonth = await client.expense.findMany({
+        // Fetch transactions for the current month
+        const transactionsThisMonth = await client.transaction.findMany({
             where: {
                 userId: Number(userId),
+                type: 'expense',
                 date: {
                     gte: startDateThisMonth,
                     lte: endDateThisMonth,
@@ -108,10 +111,11 @@ export async function fetchExpenseInfo(userId: string) {
             ],
         });
 
-        // Fetch expenses for the previous month
-        const expensesLastMonth = await client.expense.findMany({
+        // Fetch transactions for the previous month
+        const transactionsLastMonth = await client.transaction.findMany({
             where: {
                 userId: Number(userId),
+                type: 'expense',
                 date: {
                     gte: startDateLastMonth,
                     lte: endDateLastMonth,
@@ -124,20 +128,20 @@ export async function fetchExpenseInfo(userId: string) {
             ],
         });
 
-        // Calculate total expenses for this week
-        const totalThisWeek = expensesThisWeek.reduce((acc, expense) => acc + expense.price, 0);
+        // Calculate total transactions for this week
+        const totalThisWeek = transactionsThisWeek.reduce((acc, transaction) => acc + transaction.amount, 0);
 
-        // Calculate total expenses for last week
-        const totalLastWeek = expensesLastWeek.reduce((acc, expense) => acc + expense.price, 0);
+        // Calculate total transactions for last week
+        const totalLastWeek = transactionsLastWeek.reduce((acc, transaction) => acc + transaction.amount, 0);
 
         // Calculate percentage increase for this week
         const percentageChangeWeek = totalLastWeek ? ((totalThisWeek - totalLastWeek) / totalLastWeek) * 100 : 100;
 
-        // Calculate total expenses for this month
-        const totalThisMonth = expensesThisMonth.reduce((acc, expense) => acc + expense.price, 0);
+        // Calculate total transactions for this month
+        const totalThisMonth = transactionsThisMonth.reduce((acc, transaction) => acc + transaction.amount, 0);
 
-        // Calculate total expenses for last month
-        const totalLastMonth = expensesLastMonth.reduce((acc, expense) => acc + expense.price, 0);
+        // Calculate total transactions for last month
+        const totalLastMonth = transactionsLastMonth.reduce((acc, transaction) => acc + transaction.amount, 0);
 
         // Calculate percentage increase for this month
         const percentageChangeMonth = totalLastMonth ? ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100 : 100;
@@ -153,7 +157,7 @@ export async function fetchExpenseInfo(userId: string) {
             }
         };
     } catch (error) {
-        console.error('Error fetching expenses:', error);
-        throw new Error('Failed to fetch expenses');
+        console.error('Error fetching transactions:', error);
+        throw new Error('Failed to fetch transactions');
     }
 }

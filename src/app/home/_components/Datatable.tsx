@@ -82,7 +82,7 @@ export default function Datatable({
       setLoading(true);
       try {
         const response = await axios.get(
-          `/api/transaction?userId=${userId}&month=${month}&page=${page}&pageSize=${pageSize}`
+          `/api/transaction?userId=${userId}&month=${month}&page=${page}&pageSize=${pageSize}`,
         );
         setTransactionList(response.data.transactions);
         setTotalTransactions(response.data.total);
@@ -185,7 +185,7 @@ export default function Datatable({
                     </TableCell>
                     <TableCell
                       className={cn(
-                        type === "expense" ? "text-destructive" : "text-green"
+                        type === "expense" ? "text-destructive" : "text-green",
                       )}
                     >
                       {currencyFormat(currency)}
@@ -219,7 +219,7 @@ export default function Datatable({
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                )
+                ),
               )}
             </TableBody>
           </Table>
